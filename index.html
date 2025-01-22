@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浪漫表白</title>
+    <style>
+        body,
+        html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Microsoft YaHei", sans-serif;
+            overflow: hidden;
+            flex-direction: column;
+            text-align: center;
+            position: relative;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background-color: #ffffff;
+        }
+
+        #btn {
+            height: 55px;
+            width: 75px;
+            cursor: pointer;
+            background-color: #ce4f6a00;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.3s ease;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .show {
+            opacity: 1;
+        }
+
+        #btn img {
+            width: 60px;
+            height: 40px;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        #btnYes,
+        #btnNo {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #ce4f6a;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            transition: all 0.3s ease-in-out;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #btn:hover,
+        #btnYes:hover,
+        #btnNo:hover {
+            background-color: #d37da8;
+            transform: translateY(-4px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .message {
+            display: none;
+            font-size: 20px;
+            margin: 10px;
+            padding: 30px;
+            border: 2px solid #f19fb3;
+            border-radius: 8px;
+            background-color: #ffffff;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 90%;
+            overflow: hidden;
+            word-wrap: break-word;
+            transform: perspective(500px) rotateY(10deg);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .message.show {
+            transform: perspective(500px) rotateY(0deg);
+        }
+
+        .message-text {
+            font-size: 18px;
+            display: block;
+            padding: 30px;
+            border: 2px solid #f19fb3;
+            border-radius: 10px;
+            background-color: #ffffff;
+            text-align: center;
+            margin-bottom: 30px;
+            transform: perspective(500px) rotateY(10deg);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .message-text.show {
+            transform: perspective(500px) rotateY(0deg);
+        }
+
+        .qr-button {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 2px solid #ce4f6a;
+            z-index: 1000;
+            font-size: 14px;
+            color: #ce4f6a;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+        }
+
+        .qr-button:hover {
+            transform: translateY(-2px) rotate(5deg);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            background: #ce4f6a;
+            color: white;
+        }
+
+        .div-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            max-width: 100%;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="c"></canvas>
+    
+    <button class="qr-button" onclick="showQRCode()">代码</button>
+
+    <div id="mainContent">
+        <h1 id="messageTitle"></h1>
+        <p id="messageText"></p>
+        <button id="btn">
+            <img src="./letters.png" alt="信件图标">
+        </button>
+        <div class="message"></div>
+        <div class="message"></div>
+        <div class="message"></div>
+        <div class="message"></div>
+        <div class="message"></div>
+        <div class="message"></div>
+        <div class="message"></div>
+        <div class="message"></div>
+
+        <div id="msgYes" class="message-text" style="display: none;"></div>
+
+        <div class="div-buttons">
+            <button id="btnYes" style="display: none;"></button>
+            <button id="btnNo" style="display: none;"></button>
+        </div>
+    </div>
+
+    <div id="qrContent" style="display: none;">
+        <div class="container" style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+            <h1></h1>
+            <img src="e50d83414b80de0eaea1c508e90bafd.jpg" alt="微信二维码" style="max-width: 300px; width: 100%; border-radius: 10px;">
+            <p style="margin-top: 20px; color: #666;"></p>
+        </div>
+    </div>
+
+    <script src="./script.js"></script>
+</body>
+
+</html>
